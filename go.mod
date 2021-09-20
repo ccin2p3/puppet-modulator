@@ -3,12 +3,17 @@ module gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator
 go 1.17
 
 require (
+	github.com/Masterminds/semver/v3 v3.1.1
+	github.com/bitfield/script v0.18.0
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/pkg/errors v0.8.1
+	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 )
 
 require (
+	bitbucket.org/creachadair/shell v0.0.6 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
