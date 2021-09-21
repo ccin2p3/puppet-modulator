@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/bitfield/script"
+	"gitlab.in2p3.fr/rferrand/go-system-utils/command"
 )
 
 func GitCommitFile(msg string, files ...string) error {
@@ -33,16 +31,23 @@ func GitCommitFile(msg string, files ...string) error {
 		}).Fatal("fail to close commit message temporary file")
 	}
 
-	gCmd := fmt.Sprintf("git commit -F %s %s", cFile.Name(), strings.Join(files, " "))
-	log.Debugf("executing %s", gCmd)
+	gfCmd := []string{"git", "commit", "-F", cFile.Name()}
+	for _, fileToCommit := range files {
+		gfCmd = append(gfCmd, fileToCommit)
+	}
 
-	p := script.Exec(gCmd)
-	pOut, err := p.String()
+	log.Debugf("executing %s", gfCmd)
+
+	argv := &command.ExecArgv{
+		Command: gfCmd,
+	}
+
+	result, err := command.Execute(argv)
 	if err != nil {
 		return errors.Wrap(err, "commiting modifications")
 	}
 
-	log.Debugf("git commit output: %s", pOut)
+	log.Debugf("git commit output: %s", result.Stdout)
 
 	return nil
 }
