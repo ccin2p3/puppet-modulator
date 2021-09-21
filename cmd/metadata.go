@@ -52,7 +52,8 @@ const (
 
 var (
 	metadataCmd = &cobra.Command{
-		Use: "metadata",
+		Use:   "metadata",
+		Short: "Manipulate module metadata.json file",
 	}
 
 	metadataSetVersionCmd = &cobra.Command{
