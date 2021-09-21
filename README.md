@@ -104,3 +104,15 @@ Global Flags:
 
 Use "puppet-modulator metadata [command] --help" for more information about a command.
 ```
+
+## Examples
+
+### Metadata manipulation
+
+#### Bump version without auto commit
+
+![Bump version without auto commit](doc/modulator_metadata_bump.gif)
+
+#### Bump version with auto commit
+
+![Bump version with auto commit](doc/modulator_metadata_bump_autocommit.gif)
