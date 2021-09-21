@@ -2,7 +2,7 @@ package mmodifier
 
 import (
 	"bytes"
-	"crypto/sha256"
+	"encoding/hex"
 	"io"
 	"os"
 
@@ -90,10 +90,16 @@ func (m *metadataModifier) SetPostRewriteFunc(cb func() error) {
 }
 
 func (m metadataModifier) wouldRewriteModifyFile(md module.MetadataJSON) bool {
-	hasher := sha256.New()
+	hasher := module.MetadataHasherNewFunc()
 	m.writeMetadataToWriter(hasher, md)
+	newSum := hasher.Sum(nil)
 
-	return bytes.Compare(md.OriginalSum, hasher.Sum(nil)) != 0
+	logrus.WithFields(logrus.Fields{
+		"old-checksum": hex.EncodeToString(md.OriginalSum),
+		"new-checksum": hex.EncodeToString(newSum),
+	}).Debug("wouldRewriteModifyFile()")
+
+	return bytes.Compare(md.OriginalSum, newSum) != 0
 }
 
 func (m metadataModifier) Modify() error {

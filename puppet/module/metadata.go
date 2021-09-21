@@ -17,6 +17,10 @@ const (
 	MetadataJSONFilename         = "metadata.json"
 )
 
+var (
+	MetadataHasherNewFunc = sha1.New
+)
+
 type MetadataJSON struct {
 	m           map[string]interface{}
 	OriginalSum []byte
@@ -27,7 +31,7 @@ func NewMetadataJSONFromReader(r io.Reader) (MetadataJSON, error) {
 		m: make(map[string]interface{}),
 	}
 
-	hasher := sha1.New()
+	hasher := MetadataHasherNewFunc()
 	teeReader := io.TeeReader(r, hasher)
 
 	if err := json.NewDecoder(teeReader).Decode(&m.m); err != nil {

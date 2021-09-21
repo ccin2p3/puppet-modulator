@@ -70,6 +70,9 @@ github.com/spf13/viper/internal/encoding/yaml
 # github.com/subosito/gotenv v1.2.0
 ## explicit
 github.com/subosito/gotenv
+# gitlab.in2p3.fr/rferrand/go-system-utils v1.1.0
+## explicit; go 1.16
+gitlab.in2p3.fr/rferrand/go-system-utils/command
 # golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader

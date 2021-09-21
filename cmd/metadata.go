@@ -87,64 +87,92 @@ var (
 	}
 )
 
-func newCobraModuleMetadataModifierFuncAdapter(mdModifierFunc mmodifier.MetadataModifierFunc) func(*cobra.Command, []string) {
-	return func(cmd *cobra.Command, args []string) {
-		mdModifier := mmodifier.NewMetadataModifier(mdModifierFunc)
+type metadataCLIOptions struct {
+	destFile            string
+	commitModifications bool
+	commitPolicy        string
+	commitMessage       string
+	modifierFunc        mmodifier.MetadataModifierFunc
+}
 
-		destFile, _ := cmd.Flags().GetString("output")
-		if destFile != "" {
-			var writer io.WriteCloser
-			if destFile == "-" {
-				// write to STDOUT
-				writer = ioutils.NopWriteCloser(os.Stdout)
-			} else {
-				mdFileFd, err := os.OpenFile(destFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-				if err != nil {
-					log.WithFields(log.Fields{
-						"error": err,
-					}).Fatalf("fail to open metadata file %q for writing", destFile)
-				}
+const (
+	metadataCLIPreRealCommitCommitMsg = "[meta] metadata.json automated modifications (pre-real modifications)"
+)
 
-				writer = mdFileFd
-			}
+func metadataCLIRun(opts metadataCLIOptions) {
+	mdModifier := mmodifier.NewMetadataModifier(opts.modifierFunc)
 
-			mdModifier.SetWriter(writer)
-		}
-
-		commit, _ := cmd.Flags().GetBool("git-commit")
-		if commit {
-			if ksp, _ := cmd.Flags().GetString("keys-sort-commit-policy"); ksp == metadataKeysPreSortAndCommitPolicyName {
-				mdModifier.SetPostRewriteFunc(func() error {
-					commitMsg := fmt.Sprintf("[meta] metadata.json automated modifications (pre-real modifications)")
-					if err := gitutils.GitCommitFile(commitMsg, module.MetadataJSONFilename); err != nil {
-						log.WithFields(log.Fields{
-							"error": err,
-						}).Fatal("fail to commit modifications")
-					}
-
-					log.Debug("pre-modifications modifications only commited")
-
-					return nil
-				})
-			}
-		}
-
-		if err := mdModifier.Modify(); err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Fatal("fail to modify module metadata")
-		}
-
-		if commit {
-			commitMsg, _ := cmd.Flags().GetString("git-commit-msg")
-
-			if err := gitutils.GitCommitFile(commitMsg, module.MetadataJSONFilename); err != nil {
+	destFile := opts.destFile
+	if destFile != "" {
+		var writer io.WriteCloser
+		if destFile == "-" {
+			// write to STDOUT
+			writer = ioutils.NopWriteCloser(os.Stdout)
+		} else {
+			mdFileFd, err := os.OpenFile(destFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+			if err != nil {
 				log.WithFields(log.Fields{
 					"error": err,
-				}).Fatal("fail to commit modifications")
+				}).Fatalf("fail to open metadata file %q for writing", destFile)
 			}
+
+			writer = mdFileFd
 		}
 
+		mdModifier.SetWriter(writer)
+	}
+
+	commit := opts.commitModifications
+	if commit {
+		if ksp := opts.commitPolicy; ksp == metadataKeysPreSortAndCommitPolicyName {
+			mdModifier.SetPostRewriteFunc(func() error {
+				commitMsg := fmt.Sprintf(metadataCLIPreRealCommitCommitMsg)
+				if err := gitutils.GitCommitFile(commitMsg, module.MetadataJSONFilename); err != nil {
+					log.WithFields(log.Fields{
+						"error": err,
+					}).Fatal("fail to commit modifications")
+				}
+
+				log.Debug("pre-modifications modifications only commited")
+
+				return nil
+			})
+		}
+	}
+
+	if err := mdModifier.Modify(); err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatal("fail to modify module metadata")
+	}
+
+	if commit {
+		commitMsg := opts.commitMessage
+
+		if err := gitutils.GitCommitFile(commitMsg, module.MetadataJSONFilename); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatal("fail to commit modifications")
+		}
+	}
+}
+
+func newCobraModuleMetadataModifierFuncAdapter(mdModifierFunc mmodifier.MetadataModifierFunc) func(*cobra.Command, []string) {
+	return func(cmd *cobra.Command, args []string) {
+		destFile, _ := cmd.Flags().GetString("output")
+		commitPolicy, _ := cmd.Flags().GetString("keys-sort-commit-policy")
+		commitMsg, _ := cmd.Flags().GetString("git-commit-msg")
+		commit, _ := cmd.Flags().GetBool("git-commit")
+
+		cliOpts := metadataCLIOptions{
+			destFile:            destFile,
+			modifierFunc:        mdModifierFunc,
+			commitModifications: commit,
+			commitPolicy:        commitPolicy,
+			commitMessage:       commitMsg,
+		}
+
+		metadataCLIRun(cliOpts)
 	}
 }
 
@@ -165,5 +193,9 @@ func init() {
 	}
 
 	metadataCmd.PersistentFlags().BoolP("git-commit", "g", false, "Commit changes to git")
-	metadataCmd.PersistentFlags().StringP("git-commit-msg", "m", "[meta] Bump version", "Git commit message")
+	metadataCmd.PersistentFlags().StringP("git-commit-msg", "m", metadataCLIBumpVersionDefaultCommitMsg, "Git commit message")
 }
+
+const (
+	metadataCLIBumpVersionDefaultCommitMsg = "[meta] Bump version"
+)
