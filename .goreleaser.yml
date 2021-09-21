@@ -43,3 +43,13 @@ nfpms:
       - deb
       - rpm
     bindir: '/usr/bin'
+
+#
+# Gitlab integration
+#
+gitlab_urls:
+  api: https://gitlab.in2p3.fr/api/v4/
+  download: https://gitlab.in2p3.fr
+
+env_files:
+  gitlab_token: '~/.config/goreleaser/gitlab_token'
