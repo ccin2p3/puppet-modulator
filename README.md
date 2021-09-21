@@ -116,3 +116,9 @@ Use "puppet-modulator metadata [command] --help" for more information about a co
 #### Bump version with auto commit
 
 ![Bump version with auto commit](doc/modulator_metadata_bump_autocommit.gif)
+
+### Git flow release
+
+#### Start and finish a git-flow release
+
+![Start and finish a git-flow release](doc/modulator_release_start_finish.gif)
