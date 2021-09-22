@@ -105,6 +105,10 @@ Global Flags:
 Use "puppet-modulator metadata [command] --help" for more information about a command.
 ```
 
+## Install
+
+Pre-compiled binaries are available in the [release page](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/releases).
+
 ## Examples
 
 ### Metadata manipulation
