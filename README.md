@@ -1,5 +1,8 @@
 # Puppet Modulator
 
+[![pipeline status](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/badges/develop/pipeline.svg)](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/commits/develop)
+[![coverage report](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/badges/develop/coverage.svg)](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/commits/develop)
+
 - [Puppet Modulator](#puppet-modulator)
   - [Description](#description)
   - [Usage](#usage)
