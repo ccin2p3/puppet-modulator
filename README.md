@@ -15,6 +15,9 @@
       - [Bump version with auto commit](#bump-version-with-auto-commit)
     - [Git flow release](#git-flow-release)
       - [Start and finish a git-flow release](#start-and-finish-a-git-flow-release)
+  - [TODO](#todo)
+    - [Git flow](#git-flow)
+    - [Metadata](#metadata)
 
 ## Description
 
@@ -142,3 +145,14 @@ Pre-compiled binaries are available in the [release page](https://gitlab.in2p3.f
 #### Start and finish a git-flow release
 
 ![Start and finish a git-flow release](doc/modulator_release_start_finish.gif)
+
+## TODO
+
+### Git flow
+
+[ ] Add a _subcommand_ or _flag_ to allow for _flash releases_ that would allow developer to _start_, _commit_, _finish_ a release with only one command
+
+### Metadata
+
+[ ] Add command to add a module _dependency_ (with SemVer range validation / helpers)
+[ ] Add command to allow _puppet requirements_ manipulation
