@@ -1,5 +1,21 @@
 # Puppet Modulator
 
+- [Puppet Modulator](#puppet-modulator)
+  - [Description](#description)
+  - [Usage](#usage)
+    - [Git-flow wrappers](#git-flow-wrappers)
+      - [Hotfix](#hotfix)
+      - [Release](#release)
+    - [Metadata manipulation](#metadata-manipulation)
+      - [Bump versions](#bump-versions)
+  - [Install](#install)
+  - [Examples](#examples)
+    - [Metadata manipulation](#metadata-manipulation-1)
+      - [Bump version without auto commit](#bump-version-without-auto-commit)
+      - [Bump version with auto commit](#bump-version-with-auto-commit)
+    - [Git flow release](#git-flow-release)
+      - [Start and finish a git-flow release](#start-and-finish-a-git-flow-release)
+
 ## Description
 
 High level wrapper that allows to:
