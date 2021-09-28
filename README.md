@@ -37,7 +37,7 @@ Usage:
 
 Available Commands:
   completion  generate the autocompletion script for the specified shell
-  gflow       A git-flow high-level wrapper for hotfixes and releases
+  flow       A git-flow high-level wrapper for hotfixes and releases
   help        Help about any command
   metadata    Manipulate module metadata.json file
   version     Display software version and exit
@@ -55,7 +55,7 @@ Use "puppet-modulator [command] --help" for more information about a command.
 #### Hotfix
 
 ```
-❯ puppet-modulator gflow hotfix -h
+❯ puppet-modulator flow hotfix -h
 A git-flow high-level wrapper for hotfixes
 
 Usage:
@@ -72,13 +72,13 @@ Global Flags:
       --config string   config file (default is $HOME/.puppet-modulator.yaml)
   -d, --debug           Enable debug
 
-Use "puppet-modulator gflow hotfix [command] --help" for more information about a command.
+Use "puppet-modulator flow hotfix [command] --help" for more information about a command.
 ```
 
 #### Release
 
 ```
-❯ puppet-modulator gflow release -h
+❯ puppet-modulator flow release -h
 A git-flow high-level wrapper for releases
 
 Usage:
@@ -95,7 +95,7 @@ Global Flags:
       --config string   config file (default is $HOME/.puppet-modulator.yaml)
   -d, --debug           Enable debug
 
-Use "puppet-modulator gflow release [command] --help" for more information about a command.
+Use "puppet-modulator flow release [command] --help" for more information about a command.
 ```
 
 ### Metadata manipulation

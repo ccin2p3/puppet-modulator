@@ -51,7 +51,7 @@ type cobraGitFlowFuncAdapterOptions struct {
 // gflowCmd represents the flow command
 var (
 	gflowCmd = &cobra.Command{
-		Use:   "gflow hotfix|release start|finish [version] [base-ref]",
+		Use:   "flow hotfix|release start|finish [version] [base-ref]",
 		Short: "A git-flow high-level wrapper for hotfixes and releases",
 	}
 
