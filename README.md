@@ -12,6 +12,8 @@
     - [Metadata manipulation](#metadata-manipulation)
       - [Bump versions](#bump-versions)
   - [Install](#install)
+  - [Git flow subcommands](#git-flow-subcommands)
+    - [Release and Hotfix version auto-guess](#release-and-hotfix-version-auto-guess)
   - [Examples](#examples)
     - [Metadata manipulation](#metadata-manipulation-1)
       - [Bump version without auto commit](#bump-version-without-auto-commit)
@@ -37,7 +39,7 @@ Usage:
 
 Available Commands:
   completion  generate the autocompletion script for the specified shell
-  gflow       A git-flow high-level wrapper for hotfixes and releases
+  flow       A git-flow high-level wrapper for hotfixes and releases
   help        Help about any command
   metadata    Manipulate module metadata.json file
   version     Display software version and exit
@@ -55,7 +57,7 @@ Use "puppet-modulator [command] --help" for more information about a command.
 #### Hotfix
 
 ```
-❯ puppet-modulator gflow hotfix -h
+❯ puppet-modulator flow hotfix -h
 A git-flow high-level wrapper for hotfixes
 
 Usage:
@@ -72,13 +74,13 @@ Global Flags:
       --config string   config file (default is $HOME/.puppet-modulator.yaml)
   -d, --debug           Enable debug
 
-Use "puppet-modulator gflow hotfix [command] --help" for more information about a command.
+Use "puppet-modulator flow hotfix [command] --help" for more information about a command.
 ```
 
 #### Release
 
 ```
-❯ puppet-modulator gflow release -h
+❯ puppet-modulator flow release -h
 A git-flow high-level wrapper for releases
 
 Usage:
@@ -95,7 +97,7 @@ Global Flags:
       --config string   config file (default is $HOME/.puppet-modulator.yaml)
   -d, --debug           Enable debug
 
-Use "puppet-modulator gflow release [command] --help" for more information about a command.
+Use "puppet-modulator flow release [command] --help" for more information about a command.
 ```
 
 ### Metadata manipulation
@@ -130,6 +132,20 @@ Use "puppet-modulator metadata [command] --help" for more information about a co
 ## Install
 
 Pre-compiled binaries are available in the [release page](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/releases).
+
+## Git flow subcommands
+
+### Release and Hotfix version auto-guess
+
+If you do not specify a version in your `puppet-modulator flow hotfix start` or `puppet-modulator flow release start` command, `puppet-modulator` will admit that you're trying to work _quickly_ and use the most common _version bump logic_ for those operations.
+
+This mean that:
+* for a `hotfix`, it will _increment the patch version_
+* for a `release`, it will _increment the minor version_
+
+**Important**:
+* If you don't want to use the _version auto-guess_ feature, you'll have to explicitly specify a version on command-line.
+* If you want to specify a `base reference` branch and still use the _auto-guess_ feature, you can use `""` (empty string) for the version, or `?` (question mark).
 
 ## Examples
 

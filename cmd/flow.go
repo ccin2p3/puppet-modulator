@@ -36,12 +36,15 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/cmd/summaries"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/flagutils"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/gfutils"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/gitutils"
+	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module"
+	mgit "gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module/git"
 	mmodifier "gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module/modifier"
 )
 
@@ -51,7 +54,7 @@ type cobraGitFlowFuncAdapterOptions struct {
 // gflowCmd represents the flow command
 var (
 	gflowCmd = &cobra.Command{
-		Use:   "gflow hotfix|release start|finish [version] [base-ref]",
+		Use:   "flow hotfix|release start|finish [version] [base-ref]",
 		Short: "A git-flow high-level wrapper for hotfixes and releases",
 	}
 
@@ -66,9 +69,9 @@ var (
 	}
 
 	gflowHotfixStartCmd = &cobra.Command{
-		Use:   "start version [base-ref]",
+		Use:   "start [version] [base-ref]",
 		Short: "A git-flow high-level wrapper to start hotfixes",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(2),
 		Run:   newCobraGFlowVersionBaseRefHandlerAdapter(gflowCLIStartHotfix),
 	}
 
@@ -80,9 +83,9 @@ var (
 	}
 
 	gflowReleaseStartCmd = &cobra.Command{
-		Use:   "start version [base-ref]",
+		Use:   "start [version] [base-ref]",
 		Short: "A git-flow high-level wrapper to start releases",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MaximumNArgs(2),
 		Run:   newCobraGFlowVersionBaseRefHandlerAdapter(gflowCLIStartRelease),
 	}
 
@@ -96,17 +99,64 @@ var (
 
 func newCobraGFlowVersionBaseRefHandlerAdapter(next func(string, string)) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, args []string) {
-		version := args[0]
-
+		var version string
 		var baseRef string
-		if len(args) > 1 {
+
+		if len(args) >= 1 {
+			version = args[0]
+		}
+		if len(args) == 2 {
 			baseRef = args[1]
 		}
 
 		log.WithFields(log.Fields{
-			"version": version,
-			"baseRef": baseRef,
+			"version":  version,
+			"baseRef":  baseRef,
+			"cmd-name": cmd.Parent() == gflowHotfixCmd,
 		}).Debug("CLI flags")
+
+		if version == "" || version == "?" {
+			var versModifierFunc func(v *semver.Version) semver.Version
+			if cmd.Parent() == gflowHotfixCmd {
+				if baseRef == "" {
+					baseRef = "master"
+				}
+				versModifierFunc = func(v *semver.Version) semver.Version {
+					return v.IncPatch()
+				}
+			} else {
+				// this is a release
+				if baseRef == "" {
+					baseRef = "develop"
+				}
+				versModifierFunc = func(v *semver.Version) semver.Version {
+					return v.IncMinor()
+				}
+			}
+
+			sVersion, err := mgit.GetModuleVersionAtRef(baseRef)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"baseRef": baseRef,
+					"error":   err,
+				}).Fatal("fail to get module version in reference branch")
+			}
+
+			version = versModifierFunc(sVersion).String()
+
+			log.WithFields(log.Fields{
+				"version": version,
+				"baseRef": baseRef,
+			}).Debug("version discovered")
+
+		} else {
+			if err := module.ValidateSemverString(version); err != nil {
+				log.WithFields(log.Fields{
+					"version": version,
+					"error":   err,
+				}).Fatal("invalid version specified")
+			}
+		}
 
 		next(version, baseRef)
 	}
