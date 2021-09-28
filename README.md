@@ -1,5 +1,29 @@
 # Puppet Modulator
 
+[![pipeline status](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/badges/develop/pipeline.svg)](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/commits/develop)
+[![coverage report](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/badges/develop/coverage.svg)](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/commits/develop)
+
+- [Puppet Modulator](#puppet-modulator)
+  - [Description](#description)
+  - [Usage](#usage)
+    - [Git-flow wrappers](#git-flow-wrappers)
+      - [Hotfix](#hotfix)
+      - [Release](#release)
+    - [Metadata manipulation](#metadata-manipulation)
+      - [Bump versions](#bump-versions)
+  - [Install](#install)
+  - [Git flow subcommands](#git-flow-subcommands)
+    - [Release and Hotfix version auto-guess](#release-and-hotfix-version-auto-guess)
+  - [Examples](#examples)
+    - [Metadata manipulation](#metadata-manipulation-1)
+      - [Bump version without auto commit](#bump-version-without-auto-commit)
+      - [Bump version with auto commit](#bump-version-with-auto-commit)
+    - [Git flow release](#git-flow-release)
+      - [Start and finish a git-flow release](#start-and-finish-a-git-flow-release)
+  - [TODO](#todo)
+    - [Git flow](#git-flow)
+    - [Metadata](#metadata)
+
 ## Description
 
 High level wrapper that allows to:
@@ -15,7 +39,7 @@ Usage:
 
 Available Commands:
   completion  generate the autocompletion script for the specified shell
-  gflow       A git-flow high-level wrapper for hotfixes and releases
+  flow       A git-flow high-level wrapper for hotfixes and releases
   help        Help about any command
   metadata    Manipulate module metadata.json file
   version     Display software version and exit
@@ -33,7 +57,7 @@ Use "puppet-modulator [command] --help" for more information about a command.
 #### Hotfix
 
 ```
-❯ puppet-modulator gflow hotfix -h
+❯ puppet-modulator flow hotfix -h
 A git-flow high-level wrapper for hotfixes
 
 Usage:
@@ -50,13 +74,13 @@ Global Flags:
       --config string   config file (default is $HOME/.puppet-modulator.yaml)
   -d, --debug           Enable debug
 
-Use "puppet-modulator gflow hotfix [command] --help" for more information about a command.
+Use "puppet-modulator flow hotfix [command] --help" for more information about a command.
 ```
 
 #### Release
 
 ```
-❯ puppet-modulator gflow release -h
+❯ puppet-modulator flow release -h
 A git-flow high-level wrapper for releases
 
 Usage:
@@ -73,7 +97,7 @@ Global Flags:
       --config string   config file (default is $HOME/.puppet-modulator.yaml)
   -d, --debug           Enable debug
 
-Use "puppet-modulator gflow release [command] --help" for more information about a command.
+Use "puppet-modulator flow release [command] --help" for more information about a command.
 ```
 
 ### Metadata manipulation
@@ -105,6 +129,24 @@ Global Flags:
 Use "puppet-modulator metadata [command] --help" for more information about a command.
 ```
 
+## Install
+
+Pre-compiled binaries are available in the [release page](https://gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/-/releases).
+
+## Git flow subcommands
+
+### Release and Hotfix version auto-guess
+
+If you do not specify a version in your `puppet-modulator flow hotfix start` or `puppet-modulator flow release start` command, `puppet-modulator` will admit that you're trying to work _quickly_ and use the most common _version bump logic_ for those operations.
+
+This mean that:
+* for a `hotfix`, it will _increment the patch version_
+* for a `release`, it will _increment the minor version_
+
+**Important**:
+* If you don't want to use the _version auto-guess_ feature, you'll have to explicitly specify a version on command-line.
+* If you want to specify a `base reference` branch and still use the _auto-guess_ feature, you can use `""` (empty string) for the version, or `?` (question mark).
+
 ## Examples
 
 ### Metadata manipulation
@@ -122,3 +164,14 @@ Use "puppet-modulator metadata [command] --help" for more information about a co
 #### Start and finish a git-flow release
 
 ![Start and finish a git-flow release](doc/modulator_release_start_finish.gif)
+
+## TODO
+
+### Git flow
+
+* [ ] Add a _subcommand_ or _flag_ to allow for _flash releases_ that would allow developer to _start_, _commit_, _finish_ a release with only one command
+
+### Metadata
+
+* [ ] Add command to add a module _dependency_ (with SemVer range validation / helpers)
+* [ ] Add command to allow _puppet requirements_ manipulation

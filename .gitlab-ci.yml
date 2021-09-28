@@ -1,0 +1,13 @@
+---
+stages:
+  - test
+
+build:
+  image: gitlab-registry.in2p3.fr/cc-in2p3/containers/golang:latest
+  stage: test
+  variables:
+    GOOS: "linux"
+    GOFLAGS: "-mod=vendor"
+  script:
+    - go test -v -coverprofile=coverage.out -race ./...
+    - go tool cover -func coverage.out
