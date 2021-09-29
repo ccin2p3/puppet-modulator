@@ -178,7 +178,7 @@ func gflowCLIStartHotfix(version string, baseRef string) {
 	}
 
 	// immediatly bump the version
-	metadataCLIRun(metadataCLIOptions{
+	metadataBumpCLIRun(metadataBumpCLIOptions{
 		commitModifications: true,
 		commitPolicy:        metadataKeysPreSortAndCommitPolicyName,
 		commitMessage:       metadataCLIBumpVersionDefaultCommitMsg,
@@ -209,7 +209,7 @@ func gflowCLIStartRelease(version string, baseRef string) {
 	}
 
 	// immediatly bump the version
-	metadataCLIRun(metadataCLIOptions{
+	metadataBumpCLIRun(metadataBumpCLIOptions{
 		commitModifications: true,
 		commitPolicy:        metadataKeysPreSortAndCommitPolicyName,
 		commitMessage:       metadataCLIBumpVersionDefaultCommitMsg,

@@ -37,11 +37,13 @@ import (
 	"io"
 	"os"
 
+	"github.com/Masterminds/semver/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/gitutils"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/ioutils"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module"
+	mgit "gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module/git"
 	mmodifier "gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module/modifier"
 )
 
@@ -86,9 +88,69 @@ var (
 		Short: "Bump module version to the next major",
 		Run:   newCobraModuleMetadataModifierFuncAdapter(mmodifier.IncMajorVersionModifierFunc),
 	}
+
+	metadataVersionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Get module version (current or next)",
+	}
+
+	metadataVersionGetCurrentCmd = &cobra.Command{
+		Use:   "get",
+		Short: "Get current module version",
+		Run:   metadataGetVersionCLIRun(nil),
+	}
+
+	metadataVersionGetNextCmd = &cobra.Command{
+		Use:   "get-next",
+		Short: "Get next module version",
+		Run:   metadataGetVersionCLIRun(nil),
+	}
+
+	metadataVersionGetNextPatchCmd = &cobra.Command{
+		Use:   "patch",
+		Short: "Get next patch module version",
+		Run: metadataGetVersionCLIRun(func(v *semver.Version) semver.Version {
+			return v.IncPatch()
+		}),
+	}
+
+	metadataVersionGetNextMinorCmd = &cobra.Command{
+		Use:   "minor",
+		Short: "Get next minor module version",
+		Run: metadataGetVersionCLIRun(func(v *semver.Version) semver.Version {
+			return v.IncMinor()
+		}),
+	}
+
+	metadataVersionGetNextMajorCmd = &cobra.Command{
+		Use:   "major",
+		Short: "Get next major module version",
+		Run: metadataGetVersionCLIRun(func(v *semver.Version) semver.Version {
+			return v.IncMajor()
+		}),
+	}
 )
 
-type metadataCLIOptions struct {
+func metadataGetVersionCLIRun(vModifier func(*semver.Version) semver.Version) func(*cobra.Command, []string) {
+	return func(cmd *cobra.Command, s []string) {
+		v, err := mgit.GetModuleVersionAtRef("HEAD")
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+				"ref":   "HEAD",
+			}).Fatal("fail to get module version")
+		}
+
+		if vModifier != nil {
+			nv := vModifier(v)
+			v = &nv
+		}
+
+		fmt.Printf("%s\n", v.String())
+	}
+}
+
+type metadataBumpCLIOptions struct {
 	destFile            string
 	commitModifications bool
 	commitPolicy        string
@@ -100,7 +162,7 @@ const (
 	metadataCLIPreRealCommitCommitMsg = "[meta] metadata.json automated modifications (pre-real modifications)"
 )
 
-func metadataCLIRun(opts metadataCLIOptions) {
+func metadataBumpCLIRun(opts metadataBumpCLIOptions) {
 	mdModifier := mmodifier.NewMetadataModifier(opts.modifierFunc)
 
 	destFile := opts.destFile
@@ -165,7 +227,7 @@ func newCobraModuleMetadataModifierFuncAdapter(mdModifierFunc mmodifier.Metadata
 		commitMsg, _ := cmd.Flags().GetString("git-commit-msg")
 		commit, _ := cmd.Flags().GetBool("git-commit")
 
-		cliOpts := metadataCLIOptions{
+		cliOpts := metadataBumpCLIOptions{
 			destFile:            destFile,
 			modifierFunc:        mdModifierFunc,
 			commitModifications: commit,
@@ -173,7 +235,7 @@ func newCobraModuleMetadataModifierFuncAdapter(mdModifierFunc mmodifier.Metadata
 			commitMessage:       commitMsg,
 		}
 
-		metadataCLIRun(cliOpts)
+		metadataBumpCLIRun(cliOpts)
 	}
 }
 
@@ -181,6 +243,14 @@ func init() {
 	rootCmd.AddCommand(metadataCmd)
 	metadataCmd.AddCommand(metadataBumpCmd)
 	metadataCmd.AddCommand(metadataSetVersionCmd)
+	metadataCmd.AddCommand(metadataVersionCmd)
+
+	metadataVersionCmd.AddCommand(metadataVersionGetCurrentCmd)
+	metadataVersionCmd.AddCommand(metadataVersionGetNextCmd)
+
+	metadataVersionGetNextCmd.AddCommand(metadataVersionGetNextPatchCmd)
+	metadataVersionGetNextCmd.AddCommand(metadataVersionGetNextMinorCmd)
+	metadataVersionGetNextCmd.AddCommand(metadataVersionGetNextMajorCmd)
 
 	metadataBumpCmd.AddCommand(metadataBumpPatchCmd)
 	metadataBumpCmd.AddCommand(metadataBumpMinorCmd)
