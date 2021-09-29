@@ -31,6 +31,10 @@ High level wrapper that allows to:
 * quickly edit `metadata.json` version field
 * wrap `git-flow` with common Puppet module edition workflows
 
+## Complete documentation
+
+The complete documentation can be found at https://cc-in2p3-puppet-master-tools.pages.in2p3.fr/puppet-modulator/.
+
 ## Usage
 
 ```
@@ -164,17 +168,17 @@ This mean that:
 
 #### Bump version without auto commit
 
-![Bump version without auto commit](doc/modulator_metadata_bump.gif)
+![Bump version without auto commit](docs/modulator_metadata_bump.gif)
 
 #### Bump version with auto commit
 
-![Bump version with auto commit](doc/modulator_metadata_bump_autocommit.gif)
+![Bump version with auto commit](docs/modulator_metadata_bump_autocommit.gif)
 
 ### Git flow release
 
 #### Start and finish a git-flow release
 
-![Start and finish a git-flow release](doc/modulator_release_start_finish.gif)
+![Start and finish a git-flow release](docs/modulator_release_start_finish.gif)
 
 ## TODO
 
