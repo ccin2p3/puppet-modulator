@@ -6,6 +6,7 @@
 - [Puppet Modulator](#puppet-modulator)
   - [Description](#description)
   - [Usage](#usage)
+    - [Pro tip: set an alias](#pro-tip-set-an-alias)
     - [Git-flow wrappers](#git-flow-wrappers)
       - [Hotfix](#hotfix)
       - [Release](#release)
@@ -51,6 +52,16 @@ Flags:
 
 Use "puppet-modulator [command] --help" for more information about a command.
 ```
+
+### Pro tip: set an alias
+
+If `puppet-modulator` is too long for you to type, just set an alias such as `alias pm="puppet-modulator"` and all the commands will become
+
+```
+$ pm flow hotfix start
+```
+
+and so on
 
 ### Git-flow wrappers
 
