@@ -8,7 +8,7 @@ copyright: "Copyright &copy; 2021 IN2P3 Computing Centre, IN2P3, CNRS"
 
 repo_name: Github
 repo_url: https://github.com/ccin2p3/puppet-modulator
-edit_uri: "blob/develop/docs"
+edit_uri: "tree/develop/docs/content/"
 
 docs_dir: "content"
 
