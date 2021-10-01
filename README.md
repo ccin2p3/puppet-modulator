@@ -6,6 +6,7 @@
 - [Puppet Modulator](#puppet-modulator)
   - [Description](#description)
   - [Usage](#usage)
+    - [Pro tip: set an alias](#pro-tip-set-an-alias)
     - [Git-flow wrappers](#git-flow-wrappers)
       - [Hotfix](#hotfix)
       - [Release](#release)
@@ -30,6 +31,10 @@ High level wrapper that allows to:
 * quickly edit `metadata.json` version field
 * wrap `git-flow` with common Puppet module edition workflows
 
+## Complete documentation
+
+The complete documentation can be found at https://cc-in2p3-puppet-master-tools.pages.in2p3.fr/puppet-modulator/.
+
 ## Usage
 
 ```
@@ -51,6 +56,16 @@ Flags:
 
 Use "puppet-modulator [command] --help" for more information about a command.
 ```
+
+### Pro tip: set an alias
+
+If `puppet-modulator` is too long for you to type, just set an alias such as `alias pm="puppet-modulator"` and all the commands will become
+
+```
+$ pm flow hotfix start
+```
+
+and so on
 
 ### Git-flow wrappers
 
@@ -153,17 +168,17 @@ This mean that:
 
 #### Bump version without auto commit
 
-![Bump version without auto commit](doc/modulator_metadata_bump.gif)
+![Bump version without auto commit](docs/modulator_metadata_bump.gif)
 
 #### Bump version with auto commit
 
-![Bump version with auto commit](doc/modulator_metadata_bump_autocommit.gif)
+![Bump version with auto commit](docs/modulator_metadata_bump_autocommit.gif)
 
 ### Git flow release
 
 #### Start and finish a git-flow release
 
-![Start and finish a git-flow release](doc/modulator_release_start_finish.gif)
+![Start and finish a git-flow release](docs/modulator_release_start_finish.gif)
 
 ## TODO
 

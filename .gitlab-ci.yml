@@ -1,8 +1,9 @@
 ---
 stages:
   - test
+  - doc
 
-build:
+unittest:
   image: gitlab-registry.in2p3.fr/cc-in2p3/containers/golang:latest
   stage: test
   variables:
@@ -11,3 +12,16 @@ build:
   script:
     - go test -v -coverprofile=coverage.out -race ./...
     - go tool cover -func coverage.out
+
+pages:
+  stage: doc
+  image:
+    name: squidfunk/mkdocs-material:7.3.0
+    entrypoint: [""]
+  script:
+    - "cd docs && mkdocs build -c -v -d ../public"
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
