@@ -89,6 +89,41 @@ var (
 		Run:   newCobraModuleMetadataModifierFuncAdapter(mmodifier.IncMajorVersionModifierFunc),
 	}
 
+	metadataPuppetVersionCmd = &cobra.Command{
+		Use:   "puppet-version",
+		Short: "Interact with module required puppet version",
+	}
+
+	metadataPuppetVersionGetCmd = &cobra.Command{
+		Use:   "get",
+		Short: "Get module required puppet version",
+		Run: metadataGetCLIRun(func(md module.MetadataJSON) {
+			pv, err := md.GetPuppetVersionRequirement()
+			if err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Fatal("parsing puppet version requirements")
+			}
+
+			fmt.Printf("%s\n", pv.String())
+		}),
+	}
+
+	metadataPuppetVersionSetCmd = &cobra.Command{
+		Use:   "set VERSION",
+		Short: "Set module required puppet version",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			versionStr := args[0]
+			if err := module.ValidateSemverConstraint(versionStr); err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Fatalf("%s is an invalid version constraint", versionStr)
+			}
+			newCobraModuleMetadataModifierFuncAdapter(mmodifier.SetPuppetRequiredVersionFunc(versionStr))(cmd, args)
+		},
+	}
+
 	metadataVersionCmd = &cobra.Command{
 		Use:   "version",
 		Short: "Get module version (current or next)",
@@ -131,6 +166,20 @@ var (
 	}
 )
 
+func metadataGetCLIRun(handler func(module.MetadataJSON)) func(*cobra.Command, []string) {
+	return func(c *cobra.Command, s []string) {
+		md, err := module.NewMetadataJSONFromFilename(module.MetadataJSONFilename)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error":    err,
+				"filename": module.MetadataJSONFilename,
+			}).Fatal("parsing metadata file")
+		}
+
+		handler(md)
+	}
+}
+
 func metadataGetVersionCLIRun(vModifier func(*semver.Version) semver.Version) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, s []string) {
 		v, err := mgit.GetModuleVersionAtRef("HEAD")
@@ -162,7 +211,7 @@ const (
 	metadataCLIPreRealCommitCommitMsg = "[meta] metadata.json automated modifications (pre-real modifications)"
 )
 
-func metadataBumpCLIRun(opts metadataBumpCLIOptions) {
+func metadataModifyCLIRun(opts metadataBumpCLIOptions) {
 	mdModifier := mmodifier.NewMetadataModifier(opts.modifierFunc)
 
 	destFile := opts.destFile
@@ -235,7 +284,7 @@ func newCobraModuleMetadataModifierFuncAdapter(mdModifierFunc mmodifier.Metadata
 			commitMessage:       commitMsg,
 		}
 
-		metadataBumpCLIRun(cliOpts)
+		metadataModifyCLIRun(cliOpts)
 	}
 }
 
@@ -244,6 +293,10 @@ func init() {
 	metadataCmd.AddCommand(metadataBumpCmd)
 	metadataCmd.AddCommand(metadataSetVersionCmd)
 	metadataCmd.AddCommand(metadataVersionCmd)
+	metadataCmd.AddCommand(metadataPuppetVersionCmd)
+
+	metadataPuppetVersionCmd.AddCommand(metadataPuppetVersionGetCmd)
+	metadataPuppetVersionCmd.AddCommand(metadataPuppetVersionSetCmd)
 
 	metadataVersionCmd.AddCommand(metadataVersionGetCurrentCmd)
 	metadataVersionCmd.AddCommand(metadataVersionGetNextCmd)
@@ -264,9 +317,39 @@ func init() {
 	}
 
 	metadataCmd.PersistentFlags().BoolP("git-commit", "g", false, "Commit changes to git")
-	metadataCmd.PersistentFlags().StringP("git-commit-msg", "m", metadataCLIBumpVersionDefaultCommitMsg, "Git commit message")
+
+	for _, s := range []struct {
+		cmd              []*cobra.Command
+		defaultCommitMsg string
+		persistent       bool
+	}{
+		{
+			cmd: []*cobra.Command{
+				metadataSetVersionCmd,
+				metadataBumpCmd,
+			},
+			defaultCommitMsg: metadataCLIBumpVersionDefaultCommitMsg,
+			persistent:       true,
+		},
+		{
+			cmd:              []*cobra.Command{metadataPuppetVersionSetCmd},
+			defaultCommitMsg: metadataCLISetPuppetVersionRequirementDefaultCommitMsg,
+			persistent:       false,
+		},
+	} {
+		for _, cmd := range s.cmd {
+
+			flagSet := cmd.PersistentFlags()
+			if !s.persistent {
+				flagSet = cmd.Flags()
+			}
+
+			flagSet.StringP("git-commit-msg", "m", s.defaultCommitMsg, "Git commit message")
+		}
+	}
 }
 
 const (
-	metadataCLIBumpVersionDefaultCommitMsg = "[meta] Bump version"
+	metadataCLIBumpVersionDefaultCommitMsg                 = "[meta] Bump version"
+	metadataCLISetPuppetVersionRequirementDefaultCommitMsg = "[meta] Update puppet version requirements"
 )

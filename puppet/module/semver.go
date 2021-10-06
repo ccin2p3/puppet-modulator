@@ -9,3 +9,11 @@ func ValidateSemverString(s string) error {
 	}
 	return nil
 }
+
+func ValidateSemverConstraint(s string) error {
+	_, err := semver.NewConstraint(s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
