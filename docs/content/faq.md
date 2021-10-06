@@ -11,7 +11,7 @@ sorted in alphabetical order. [`puppet-blacksmith` does have the exact same beha
 
 This is expected behavior and there is no way to change that.
 
-The only thing you can control is how this will _structure modification_ will be commited to your repository. The [`metadata.json` keys sort commit policy documentation](metadata.md#the-metadatajson-keys-sort-commit-policy) will explain in detail this behavior.
+The only thing you can control is how this will _structure modification_ will be commited to your repository. The [`metadata.json` keys sort commit policy documentation](metadata/index.md#the-metadatajson-keys-sort-commit-policy) will explain in detail this behavior.
 
 ## I'd like to use the _version auto-guess_ feature in `flow` and still specify a _base reference branch_
 
