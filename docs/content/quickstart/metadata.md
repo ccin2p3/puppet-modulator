@@ -47,4 +47,4 @@ diff --git a/metadata.json b/metadata.json
  }
 ```
 
-You can learn more in the [Metadata command](../metadata.md) dedicated page.
+You can learn more in the [Metadata command](../metadata/index.md) dedicated page.

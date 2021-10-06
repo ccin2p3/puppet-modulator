@@ -187,3 +187,10 @@ func SetVersionModifierFunc(v string) MetadataModifierFunc {
 		return nil
 	}
 }
+
+// TODO:
+func SetPuppetRequiredVersionFunc(v string) MetadataModifierFunc {
+	return func(md module.MetadataJSON) error {
+		return md.SetPuppetVersionRequirement(v)
+	}
+}

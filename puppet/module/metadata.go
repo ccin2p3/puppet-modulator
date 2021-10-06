@@ -17,6 +17,11 @@ const (
 	MetadataJSONFilename         = "metadata.json"
 )
 
+const (
+	MetadataJSONModuleRequirementsKey                        = "requirements"
+	MetadataJSONModuleRequirementsPuppetVersionConstraintKey = "puppet"
+)
+
 var (
 	MetadataHasherNewFunc = sha1.New
 )
@@ -24,6 +29,21 @@ var (
 type MetadataJSON struct {
 	m           map[string]interface{}
 	OriginalSum []byte
+}
+
+type metadataJSONVersionConstraint struct {
+	Name       string `json:"name"`
+	Constraint string `json:"version_requirement,omitempty"`
+}
+
+func NewMetadataJSONFromFilename(filename string) (MetadataJSON, error) {
+	fd, err := os.Open(filename)
+	if err != nil {
+		return MetadataJSON{}, errors.Wrapf(err, "opening file %s for reading", filename)
+	}
+	defer fd.Close()
+
+	return NewMetadataJSONFromReader(fd)
 }
 
 func NewMetadataJSONFromReader(r io.Reader) (MetadataJSON, error) {
@@ -59,6 +79,25 @@ func (m MetadataJSONInvalidKeyDataTypeErr) Error() string {
 	return fmt.Sprintf("key %q is of type %q while %q was expected", m.Key, m.GotDataType, m.ExpectedDataType)
 }
 
+func (m MetadataJSON) getVersionConstraintSliceValue(key string) ([]metadataJSONVersionConstraint, error) {
+	v, ok := m.m[key]
+	if !ok {
+		return []metadataJSONVersionConstraint{}, MetadataJSONNoSuchKeyErr(key)
+	}
+
+	b, err := json.Marshal(v)
+	if err != nil {
+		return []metadataJSONVersionConstraint{}, errors.Wrapf(err, "JSON marshaling key %s", key)
+	}
+
+	var constraints []metadataJSONVersionConstraint
+	if err := json.Unmarshal(b, &constraints); err != nil {
+		return []metadataJSONVersionConstraint{}, errors.Wrapf(err, "JSON unmarshaling key %s", key)
+	}
+
+	return constraints, nil
+}
+
 func (m MetadataJSON) getStringValue(key string) (string, error) {
 	v, ok := m.m[key]
 	if !ok {
@@ -89,6 +128,58 @@ func (m MetadataJSON) GetVersion() (*semver.Version, error) {
 	}
 
 	return sv, nil
+}
+
+func (m MetadataJSON) GetPuppetVersionRequirement() (*semver.Constraints, error) {
+	requirements, err := m.getVersionConstraintSliceValue(MetadataJSONModuleRequirementsKey)
+	if err != nil {
+		return nil, errors.Wrapf(err, "parsing current version constraints at key %s", MetadataJSONModuleRequirementsKey)
+	}
+
+	if len(requirements) == 0 {
+		return nil, fmt.Errorf("empty requirements")
+	}
+
+	for _, requirement := range requirements {
+		if requirement.Name == MetadataJSONModuleRequirementsPuppetVersionConstraintKey {
+			c, err := semver.NewConstraint(requirement.Constraint)
+			if err != nil {
+				return nil, errors.Wrap(err, "parsing puppet version constraint")
+			}
+			return c, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no puppet requirement specified")
+}
+
+func (m *MetadataJSON) SetPuppetVersionRequirement(v string) error {
+	requirements, err := m.getVersionConstraintSliceValue(MetadataJSONModuleRequirementsKey)
+	if err != nil {
+		if _, ok := err.(MetadataJSONNoSuchKeyErr); !ok {
+			return errors.Wrapf(err, "parsing current version constraints at key %s", MetadataJSONModuleRequirementsKey)
+		}
+		requirements = []metadataJSONVersionConstraint{}
+	}
+
+	var requirementFound bool
+	for i := 0; i < len(requirements); i++ {
+		if requirements[i].Name == MetadataJSONModuleRequirementsPuppetVersionConstraintKey {
+			requirementFound = true
+			requirements[i].Constraint = v
+		}
+	}
+
+	if len(requirements) == 0 || !requirementFound {
+		requirements = append(requirements, metadataJSONVersionConstraint{
+			Name:       MetadataJSONModuleRequirementsPuppetVersionConstraintKey,
+			Constraint: v,
+		})
+	}
+
+	m.m[MetadataJSONModuleRequirementsKey] = requirements
+
+	return nil
 }
 
 func (m *MetadataJSON) Set(key string, value interface{}) {

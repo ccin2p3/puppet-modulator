@@ -189,4 +189,3 @@ This mean that:
 ### Metadata
 
 * [ ] Add command to add a module _dependency_ (with SemVer range validation / helpers)
-* [ ] Add command to allow _puppet requirements_ manipulation
