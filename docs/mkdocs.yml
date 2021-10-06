@@ -68,6 +68,9 @@ nav:
   - Getting started:
       - Alias: "quickstart/alias.md"
       - Metadata manipulation: "quickstart/metadata.md"
-  - Metadata command: "metadata.md"
+  - Metadata command:
+      - Usage and commit policies: "metadata/index.md"
+      - Module version: "metadata/version.md"
+      - Puppet version requirements: "metadata/puppet-requirements.md"
   - Flow command: "flow.md"
   - F.A.Q: "faq.md"

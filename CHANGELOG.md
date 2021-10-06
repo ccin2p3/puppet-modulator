@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2021-10-06 - Remi Ferrand - v0.5.0
+
+### New feature
+
+* Add `metadata puppet-version set|get` subcommands
+
 ## 2021-10-01 - Remi Ferrand - v0.4.0
 
 ### New feature

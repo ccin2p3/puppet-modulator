@@ -6,7 +6,7 @@ It can modify your `metadata.json` and also automatically commit the changes if 
 
 ## Usage
 
-```
+```lang-none
 ❯ pm help metadata
 Manipulate module metadata.json file
 
@@ -14,13 +14,13 @@ Usage:
   puppet-modulator metadata [command]
 
 Available Commands:
-  bump        
-  set-version Set exact module version
-  version     Get module version (current or next)
+  bump           
+  puppet-version Interact with module required puppet version
+  set-version    Set exact module version
+  version        Get module version (current or next)
 
 Flags:
   -g, --git-commit                       Commit changes to git
-  -m, --git-commit-msg string            Git commit message (default "[meta] Bump version")
   -h, --help                             help for metadata
   -p, --keys-sort-commit-policy string   policy related to metadata keys sort commit. If pre-commit is used, then a dedicated commit will be created dedicated to metadata keys sorting. If no-pre-commit is used, metadata keys sorting will still occurs, but no dedicated commit will be created (default "pre-commit")
   -o, --output string                    Where to write metadata to. Defaults to modify metadata in-place
@@ -227,101 +227,3 @@ index 684e0fd..f337595 100644
 with the commit message `[meta] Bump version`.
 
 This makes it more difficult to find the _real modification_ we are introducing, but this saves you from an _aesthetic_ only commit.
-
-
-## Module version operations
-
-### Bump patch version
-
-```lang-none
-❯ pm metadata bump patch
-```
-
-produces the following `diff`:
-
-```diff
-diff --git a/metadata.json b/metadata.json
-index f337595..152cf97 100644
---- a/metadata.json
-+++ b/metadata.json
-@@ -20,5 +20,5 @@
-   ],
-   "summary": "Test module for puppet-modulator",
-   "types": [],
--  "version": "4.1.0"
-+  "version": "4.1.1"
- }
-```
-
-### Bump minor version
-
-```lang-none
-❯ pm metadata bump minor
-```
-
-produces the following `diff`:
-
-```diff
-diff --git a/metadata.json b/metadata.json
-index f337595..152cf97 100644
---- a/metadata.json
-+++ b/metadata.json
-@@ -20,5 +20,5 @@
-   ],
-   "summary": "Test module for puppet-modulator",
-   "types": [],
--  "version": "4.1.0"
-+  "version": "4.2.0"
- }
-```
-
-### Bump major version
-
-```lang-none
-❯ pm metadata bump minor
-```
-
-produces the following `diff`:
-
-```diff
-diff --git a/metadata.json b/metadata.json
-index f337595..152cf97 100644
---- a/metadata.json
-+++ b/metadata.json
-@@ -20,5 +20,5 @@
-   ],
-   "summary": "Test module for puppet-modulator",
-   "types": [],
--  "version": "4.1.0"
-+  "version": "5.0.0"
- }
-```
-
-### Arbitrary set a version
-
-```lang-none
-❯ pm metadata set-version 42.0.0
-```
-
-produces the following `diff`:
-
-```diff
-diff --git a/metadata.json b/metadata.json
-index f337595..763de0c 100644
---- a/metadata.json
-+++ b/metadata.json
-@@ -20,5 +20,5 @@
-   ],
-   "summary": "Test module for puppet-modulator",
-   "types": [],
--  "version": "4.1.0"
-+  "version": "42.0.0"
- }
-```
-
-### Get module version
-
-```lang-none
-❯ pm metadata version get
-4.1.0
-```
