@@ -43,7 +43,6 @@ import (
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/gitutils"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/ioutils"
 	"gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module"
-	mgit "gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module/git"
 	mmodifier "gitlab.in2p3.fr/cc-in2p3-puppet-master-tools/puppet-modulator/puppet/module/modifier"
 )
 
@@ -182,12 +181,19 @@ func metadataGetCLIRun(handler func(module.MetadataJSON)) func(*cobra.Command, [
 
 func metadataGetVersionCLIRun(vModifier func(*semver.Version) semver.Version) func(*cobra.Command, []string) {
 	return func(cmd *cobra.Command, s []string) {
-		v, err := mgit.GetModuleVersionAtRef("HEAD")
+		md, err := module.NewMetadataJSONFromFilename(module.MetadataJSONFilename)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error":    err,
+				"filename": module.MetadataJSONFilename,
+			}).Fatal("parsing metadata file")
+		}
+
+		v, err := md.GetVersion()
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
-				"ref":   "HEAD",
-			}).Fatal("fail to get module version")
+			}).Fatal("parsing module version")
 		}
 
 		if vModifier != nil {
