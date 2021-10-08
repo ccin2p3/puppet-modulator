@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2021-10-08 - Remi Ferrand - v0.5.1
+
+### Fixed
+
+* Remove any reference to the old `gflow` subcommand. It was renamed to `flow`.
+
 ## 2021-10-06 - Remi Ferrand - v0.5.0
 
 ### New feature
