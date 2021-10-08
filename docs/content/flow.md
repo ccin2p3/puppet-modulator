@@ -18,7 +18,7 @@ We also always need to check what version we're in to deduce the _next version_ 
 ### Release
 
 ```lang-none
-❯ pm help flow release 
+❯ pm help flow release
 A git-flow high-level wrapper for releases
 
 Usage:
@@ -41,7 +41,7 @@ Use "puppet-modulator flow release [command] --help" for more information about 
 ### Hotfix
 
 ```lang-none
-❯ pm help flow hotfix 
+❯ pm help flow hotfix
 A git-flow high-level wrapper for hotfixes
 
 Usage:
@@ -109,11 +109,11 @@ Follow-up actions:
 - Start committing last-minute fixes in preparing your release
 - When done, run:
 
-        puppet-modulator gflow release finish
+        puppet-modulator flow release finish
 
         or
 
-        puppet-modulator gflow release finish -p -q -m "MESSAGE"
+        puppet-modulator flow release finish -p -q -m "MESSAGE"
 ```
 
 will set you on the branch `release/5.0.0` and has automatically created the commit:

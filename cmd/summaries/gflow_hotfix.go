@@ -14,11 +14,11 @@ Follow-up actions:
 - Start committing your hot fixes
 - When done, run:
 
-	puppet-modulator gflow hotfix finish
+	puppet-modulator flow hotfix finish
 
 	or
 
-	puppet-modulator gflow hotfix finish -p -q -m "MESSAGE"
+	puppet-modulator flow hotfix finish -p -q -m "MESSAGE"
 `
 )
 
