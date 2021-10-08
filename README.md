@@ -76,7 +76,7 @@ and so on
 A git-flow high-level wrapper for hotfixes
 
 Usage:
-  puppet-modulator gflow hotfix [command]
+  puppet-modulator flow hotfix [command]
 
 Available Commands:
   finish      A git-flow high-level wrapper to finish hotfixes
@@ -99,7 +99,7 @@ Use "puppet-modulator flow hotfix [command] --help" for more information about a
 A git-flow high-level wrapper for releases
 
 Usage:
-  puppet-modulator gflow release [command]
+  puppet-modulator flow release [command]
 
 Available Commands:
   finish      A git-flow high-level wrapper to finish releases
