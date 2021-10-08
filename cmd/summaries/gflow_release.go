@@ -14,11 +14,11 @@ Follow-up actions:
 - Start committing last-minute fixes in preparing your release
 - When done, run:
 
-	puppet-modulator gflow release finish
+	puppet-modulator flow release finish
 
 	or
 
-	puppet-modulator gflow release finish -p -q -m "MESSAGE"
+	puppet-modulator flow release finish -p -q -m "MESSAGE"
 `
 )
 
